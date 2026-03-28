@@ -1,4 +1,5 @@
 [
+  { "artist": "Annie Lennox",            "album": "Medusa",                                "year": 1995 },
   { "artist": "Duran Duran",              "album": "TBD" },
   { "artist": "George Michael",           "album": "TBD" },
   { "artist": "Iron Maiden",              "album": "Iron Maiden",                           "year": 1980 },
@@ -14,5 +15,7 @@
   { "artist": "Voice of the Beehive",    "album": "Let It Bee",                            "year": 1988 },
   { "artist": "Wilson Phillips",         "album": "Wilson Phillips",                       "year": 1990 },
   { "artist": "XTC",                     "album": "Fossil Fuel: The XTC Singles 1977-1992","year": 1996 },
-  { "artist": "Yes",                     "album": "90125",                                 "year": 1983 }
+  { "artist": "Yes",                     "album": "90125",                                 "year": 1983 },
+  { "artist": "Jess Glynne",             "album": "Kill the Lights",                      "year": 2023 },
+  { "artist": "My Chemical Romance",     "album": "The Black Parade",                      "year": 2006 }
 ]
