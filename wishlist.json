@@ -1,0 +1,18 @@
+[
+  { "artist": "Duran Duran",              "album": "TBD" },
+  { "artist": "George Michael",           "album": "TBD" },
+  { "artist": "Iron Maiden",              "album": "Iron Maiden",                           "year": 1980 },
+  { "artist": "Iron Maiden",              "album": "Powerslave",                            "year": 1984 },
+  { "artist": "Kate Bush",               "album": "The Whole Story",                       "year": 1986 },
+  { "artist": "Keane",                   "album": "Hopes and Fears",                       "year": 2004 },
+  { "artist": "Sting",                   "album": "Mercury Falling",                       "year": 1996 },
+  { "artist": "Sting",                   "album": "Ten Summoner's Tales",                  "year": 1993 },
+  { "artist": "The Alan Parsons Project","album": "The Turn of a Friendly Card",           "year": 1980 },
+  { "artist": "The Struts",              "album": "Young & Dangerous",                     "year": 2018 },
+  { "artist": "Thin Lizzy",              "album": "Chinatown",                             "year": 1981 },
+  { "artist": "Tom Waits",               "album": "The Heart of Saturday Night",           "year": 1974 },
+  { "artist": "Voice of the Beehive",    "album": "Let It Bee",                            "year": 1988 },
+  { "artist": "Wilson Phillips",         "album": "Wilson Phillips",                       "year": 1990 },
+  { "artist": "XTC",                     "album": "Fossil Fuel: The XTC Singles 1977-1992","year": 1996 },
+  { "artist": "Yes",                     "album": "90125",                                 "year": 1983 }
+]

@@ -898,33 +898,10 @@ function renderCollection(records) {
 
 // ════════════════════════════════════════
 //  WISHLIST
+//  Source of truth: wishlist.json
+//  localStorage holds session additions only
 // ════════════════════════════════════════
-const WISHLIST_DEFAULTS = [
-  { artist:"The Struts",              album:"Young & Dangerous" },
-  { artist:"Keane",                   album:"Hopes and Fears" },
-  { artist:"Iron Maiden",             album:"Iron Maiden" },
-  { artist:"Iron Maiden",             album:"Powerslave" },
-  { artist:"Kate Bush",               album:"The Whole Story" },
-  { artist:"The Alan Parsons Project",album:"The Turn of a Friendly Card" },
-  { artist:"Sting",                   album:"Mercury Falling (Expanded Edition)" },
-  { artist:"Sting",                   album:"Ten Summoner's Tales" },
-  { artist:"Yes",                     album:"90125" },
-  { artist:"XTC",                     album:"Fossil Fuel: The XTC Singles 1977–1992" },
-  { artist:"Wilson Phillips",         album:"Wilson Phillips" },
-  { artist:"Voice of the Beehive",    album:"Let It Bee" },
-  { artist:"Tom Waits",               album:"The Heart of Saturday Night" },
-  { artist:"Thin Lizzy",              album:"Chinatown" },
-  { artist:"Duran Duran",             album:"TBD" },
-  { artist:"George Michael",          album:"TBD" },
-];
 let wishlist = [];
-try { wishlist = JSON.parse(localStorage.getItem('vinylWishlist')||'[]'); } catch(e){}
-// Seed defaults that aren't already in the list
-WISHLIST_DEFAULTS.forEach(d => {
-  const exists = wishlist.some(w => w.artist.toLowerCase()===d.artist.toLowerCase() && w.album.toLowerCase()===d.album.toLowerCase());
-  if (!exists) wishlist.push(d);
-});
-try { localStorage.setItem('vinylWishlist', JSON.stringify(wishlist)); } catch(e){}
 function saveWishlist() { try{localStorage.setItem('vinylWishlist',JSON.stringify(wishlist));}catch(e){} }
 
 function renderWishlist() {
@@ -1162,9 +1139,10 @@ function switchDetailTab(tab) {
 }
 
 // ════════════════════════════════════════
-//  INIT — loads albums.json then renders
+//  INIT — loads albums.json + wishlist.json then renders
 // ════════════════════════════════════════
 (async function init() {
+  // Load collection
   try {
     const res = await fetch('albums.json');
     COLLECTION = await res.json();
@@ -1172,6 +1150,23 @@ function switchDetailTab(tab) {
     console.error('Could not load albums.json', e);
     COLLECTION = [];
   }
+
+  // Load wishlist.json (source of truth), then merge localStorage additions
+  let jsonWishlist = [];
+  try {
+    const res = await fetch('wishlist.json');
+    jsonWishlist = await res.json();
+  } catch(e) {
+    console.error('Could not load wishlist.json', e);
+  }
+  let localAdditions = [];
+  try { localAdditions = JSON.parse(localStorage.getItem('vinylWishlist') || '[]'); } catch(e) {}
+  // Keep only localStorage items not already in wishlist.json
+  const isDupe = (a, b) => a.artist.toLowerCase() === b.artist.toLowerCase() &&
+                            a.album.toLowerCase()  === b.album.toLowerCase();
+  const extras = localAdditions.filter(l => !jsonWishlist.some(j => isDupe(j, l)));
+  wishlist = [...jsonWishlist, ...extras];
+
   document.getElementById('ownedStat').textContent = COLLECTION.length;
   document.getElementById('collBadge').textContent = COLLECTION.length;
   renderCollection(COLLECTION);
