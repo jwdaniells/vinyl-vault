@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VINYL VAULT — John's Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #06060e;
+      --surface:  #0e0e1a;
+      --surface2: #16162a;
+      --pink:     #ff1f8e;
+      --blue:     #00d4ff;
+      --yellow:   #ffe135;
+      --green:    #39ff14;
+      --purple:   #bf5fff;
+      --text:     #dde0ff;
+      --muted:    #55558a;
+      --border:   #22224a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Orbitron', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-top: 0;
+      transition: padding-top 0.35s;
+    }
+    body.np-active { padding-top: 72px; }
+
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--pink); }
+
+    /* ════════════════════════════════════════
+       NOW PLAYING BAR
+    ════════════════════════════════════════ */
+    #nowPlayingBar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 72px;
+      z-index: 9000;
+      background: #08081c;
+      border-bottom: 2px solid var(--pink);
+      box-shadow: 0 4px 30px rgba(255,31,142,0.35), 0 2px 8px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 1rem;
+      transform: translateY(-100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    #nowPlayingBar.visible { transform: translateY(0); }
+
+    /* Animated gradient glow behind bar */
+    #nowPlayingBar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(255,31,142,0.06) 0%, rgba(0,212,255,0.04) 50%, rgba(255,31,142,0.06) 100%);
+      animation: npGlow 4s ease-in-out infinite;
+    }
+    @keyframes npGlow {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.4; }
+    }
+
+    /* Progress line at very bottom of bar */
+    .np-progress-line {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--pink), var(--blue));
+      box-shadow: 0 0 8px var(--pink);
+      width: 0%;
+      transition: width 0.5s linear;
+    }
+
+    .np-cover {
+      width: 50px; height: 50px;
+      flex-shrink: 0;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      position: relative; z-index: 1;
+    }
+    .np-cover-placeholder {
+      width: 50px; height: 50px;
+      flex-shrink: 0;
+      background: repeating-radial-gradient(circle at center, #1c1c2a 0px, #0d0d18 3px, #1c1c2a 5px, #0d0d18 8px);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      animation: spin 4s linear infinite;
+      position: relative; z-index: 1;
+    }
+
+    .np-info {
+      flex: 1; min-width: 0;
+      position: relative; z-index: 1;
+    }
+    .np-label {
+      font-family: 'VT323', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      color: var(--pink);
+      text-shadow: 0 0 8px var(--pink);
+    }
+    .np-track-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .np-artist-album {
+      font-size: 0.6rem;
+      color: var(--blue);
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .np-time {
+      font-family: 'VT323', monospace;
+      font-size: 0.9rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+      white-space: nowrap;
+    }
+
+    .np-controls {
+      display: flex; gap: 0.35rem; align-items: center;
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .np-btn {
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--text);
+      width: 36px; height: 36px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      font-family: 'VT323', monospace;
+      letter-spacing: 0;
+    }
+    .np-btn:hover { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 10px rgba(255,31,142,0.4); }
+    .np-btn.play-pause { border-color: var(--green); color: var(--green); text-shadow: 0 0 5px var(--green); }
+    .np-btn.play-pause:hover { background: var(--green); color: #000; box-shadow: 0 0 14px var(--green); text-shadow: none; }
+    .np-btn.next-btn { border-color: var(--blue); color: var(--blue); }
+    .np-btn.next-btn:hover { background: var(--blue); color: #000; box-shadow: 0 0 14px var(--blue); }
+    .np-btn.stop-btn { border-color: var(--border); font-size: 0.7rem; }
+    .np-btn.stop-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+    /* Hidden YouTube container */
+    #yt-container {
+      position: fixed;
+      top: -9999px; left: -9999px;
+      width: 1px; height: 1px;
+      pointer-events: none;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+      background: linear-gradient(180deg, #0a001a 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    header::before {
+      content: '♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪ ♫ ♪';
+      position: absolute; top: 0.4rem; left: 0; right: 0;
+      text-align: center; font-size: 0.75rem;
+      color: var(--muted); letter-spacing: 0.15em; font-family: 'VT323', monospace;
+    }
+    .logo {
+      font-size: clamp(2.2rem, 8vw, 4.5rem);
+      font-weight: 900; letter-spacing: 0.25em; line-height: 1;
+      color: var(--pink);
+      text-shadow: 0 0 8px var(--pink), 0 0 25px var(--pink), 0 0 55px rgba(255,31,142,0.5);
+      animation: flicker 7s infinite;
+    }
+    .logo em { font-style: normal; color: var(--blue); text-shadow: 0 0 8px var(--blue), 0 0 25px var(--blue), 0 0 55px rgba(0,212,255,0.5); }
+    .tagline { margin-top: 0.6rem; font-family: 'VT323', monospace; font-size: clamp(1rem, 3vw, 1.35rem); letter-spacing: 0.25em; color: var(--yellow); text-shadow: 0 0 8px rgba(255,225,53,0.6); }
+    @keyframes flicker { 0%,92%,100% {opacity:1;} 93%{opacity:.7;} 94%{opacity:1;} 96%{opacity:.5;} 97%{opacity:1;} }
+
+    /* ── Stats bar ── */
+    .stats-bar { display: flex; justify-content: center; gap: 2.5rem; padding: 0.7rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border); font-family: 'VT323', monospace; font-size: 1.15rem; letter-spacing: 0.12em; color: var(--muted); }
+    .stats-bar b { color: var(--green); }
+
+    /* ── Search ── */
+    .search-wrap { display: flex; justify-content: center; padding: 1.2rem 1rem 0.8rem; }
+    .search-wrap input { width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--blue); color: var(--text); padding: 0.75rem 1.1rem; font-family: 'Orbitron', sans-serif; font-size: 0.78rem; letter-spacing: 0.05em; outline: none; box-shadow: 0 0 12px rgba(0,212,255,0.25), inset 0 0 8px rgba(0,0,0,0.4); transition: box-shadow 0.3s, border-color 0.3s; }
+    .search-wrap input:focus { border-color: var(--pink); box-shadow: 0 0 20px rgba(255,31,142,0.4), inset 0 0 8px rgba(0,0,0,0.4); }
+    .search-wrap input::placeholder { color: var(--muted); }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; justify-content: center; border-bottom: 2px solid var(--border); }
+    .tab-btn { padding: 0.75rem 2rem; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); cursor: pointer; transition: all 0.25s; }
+    .tab-btn.active { color: var(--pink); border-bottom-color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+    .tab-btn .badge { display: inline-block; background: var(--surface2); border: 1px solid var(--border); padding: 0.05rem 0.45rem; font-size: 0.65rem; margin-left: 0.4rem; color: var(--yellow); font-family: 'VT323', monospace; vertical-align: middle; }
+
+    /* ── Grid ── */
+    .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; padding: 1.2rem; max-width: 1400px; margin: 0 auto; }
+
+    /* ── Album Card ── */
+    .card { background: var(--surface); border: 1px solid var(--border); cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
+    .card:hover { border-color: var(--pink); box-shadow: 0 0 22px rgba(255,31,142,0.35); transform: translateY(-5px); }
+    .card::before, .card::after { content: ''; position: absolute; width: 12px; height: 12px; border-color: var(--purple); border-style: solid; opacity: 0; transition: opacity 0.25s; z-index: 5; }
+    .card::before { top:0; left:0; border-width: 2px 0 0 2px; }
+    .card::after  { bottom:0; right:0; border-width: 0 2px 2px 0; }
+    .card:hover::before, .card:hover::after { opacity: 1; }
+    .cover-wrap { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: #0b0b14; }
+    .cover-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; transition: transform 0.35s; }
+    .card:hover .cover-wrap img { transform: scale(1.06); }
+    .card-hover-hint { position: absolute; inset: 0; background: rgba(255,31,142,0.15); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s; z-index: 4; font-family: 'VT323', monospace; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+    .card:hover .card-hover-hint { opacity: 1; }
+    .vinyl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 40% 35%, #1e1e32 0%, #08080f 100%); }
+    .vinyl-disc { width: 76%; height: 76%; border-radius: 50%; background: repeating-radial-gradient(circle at center, #1c1c2a 0px, #0d0d18 2px, #1c1c2a 3.5px, #0d0d18 5px, #1c1c2a 7px, #0d0d18 9px); display: flex; align-items: center; justify-content: center; animation: spin 3.5s linear infinite; box-shadow: 0 0 0 1px rgba(255,255,255,0.04); }
+    .vinyl-disc-inner { width: 22%; height: 22%; border-radius: 50%; background: radial-gradient(circle, #cc2222 0%, #771111 100%); border: 2px solid #ee3333; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .card-info { padding: 0.65rem 0.7rem 0.75rem; border-top: 1px solid var(--border); }
+    .card-title { font-size: 0.72rem; font-weight: 700; color: var(--text); letter-spacing: 0.04em; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
+    .card-artist { font-size: 0.62rem; color: var(--blue); letter-spacing: 0.07em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-year { position: absolute; bottom: 0.6rem; right: 0.6rem; font-family: 'VT323', monospace; font-size: 0.85rem; color: var(--muted); }
+    .empty { grid-column: 1/-1; text-align: center; padding: 4rem 1rem; font-family: 'VT323', monospace; font-size: 1.6rem; color: var(--muted); letter-spacing: 0.15em; }
+
+    /* ── Wishlist ── */
+    #wishlistView { display: none; }
+    .wishlist-add { max-width: 620px; margin: 1.5rem auto 0.5rem; padding: 0 1rem; }
+    .wishlist-add-inner { display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.5rem; }
+    @media (max-width: 520px) { .wishlist-add-inner { grid-template-columns: 1fr; } }
+    .wish-input { background: var(--surface); border: 1px solid var(--yellow); color: var(--text); padding: 0.75rem 0.9rem; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; letter-spacing: 0.04em; outline: none; transition: box-shadow 0.25s; }
+    .wish-input:focus { box-shadow: 0 0 12px rgba(255,225,53,0.35); }
+    .wish-input::placeholder { color: var(--muted); }
+    .btn-add { background: transparent; border: 1px solid var(--pink); color: var(--pink); padding: 0.75rem 1.1rem; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; text-shadow: 0 0 6px var(--pink); transition: all 0.25s; white-space: nowrap; }
+    .btn-add:hover { background: var(--pink); color: var(--bg); box-shadow: 0 0 20px var(--pink); text-shadow: none; }
+    .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; padding: 1.2rem; max-width: 1400px; margin: 0 auto; }
+    .wish-card { background: var(--surface); border: 1px dashed rgba(255,225,53,0.45); position: relative; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
+    .wish-card:hover { border-color: var(--yellow); box-shadow: 0 0 18px rgba(255,225,53,0.2); transform: translateY(-4px); }
+    .wish-cover { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; background: #0b0b14; }
+    .wish-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+    .wish-info { padding: 0.65rem 0.7rem 0.75rem; border-top: 1px solid var(--border); }
+    .wish-album { font-size: 0.72rem; font-weight: 700; color: var(--text); letter-spacing: 0.04em; line-height: 1.3; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wish-artist { font-size: 0.62rem; color: var(--yellow); letter-spacing: 0.07em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .remove-wish { position: absolute; top: 0.4rem; right: 0.4rem; width: 24px; height: 24px; background: rgba(0,0,0,0.65); border: 1px solid var(--muted); color: var(--muted); font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10; opacity: 0; }
+    .card:hover .remove-wish { opacity: 1; }
+    .remove-wish:hover { border-color: var(--pink); color: var(--pink); }
+    .hunting-badge { position: absolute; top: 0.5rem; left: 0.5rem; background: var(--yellow); color: #000; font-family: 'VT323', monospace; font-size: 0.75rem; letter-spacing: 0.1em; padding: 0.1rem 0.4rem; z-index: 10; }
+
+    footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border); font-family: 'VT323', monospace; font-size: 1.05rem; color: var(--muted); letter-spacing: 0.12em; }
+
+    @media (max-width: 480px) {
+      .album-grid, .wishlist-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.7rem; padding: 0.8rem; }
+      .tab-btn { padding: 0.75rem 1rem; font-size: 0.65rem; }
+      .stats-bar { gap: 1.2rem; font-size: 1rem; }
+      .np-time { display: none; }
+    }
+
+    /* ════════════════════════════════════════
+       MODAL
+    ════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(3,3,10,0.92);
+      backdrop-filter: blur(6px);
+      z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--pink);
+      box-shadow: 0 0 40px rgba(255,31,142,0.3), 0 0 80px rgba(255,31,142,0.1), inset 0 0 30px rgba(255,31,142,0.03);
+      width: 100%; max-width: 900px; max-height: 90vh;
+      display: flex; flex-direction: column;
+      transform: scale(0.92); transition: transform 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal::before, .modal::after { content: ''; position: absolute; width: 20px; height: 20px; border-color: var(--blue); border-style: solid; z-index: 2; }
+    .modal::before { top:0; left:0; border-width: 2px 0 0 2px; }
+    .modal::after  { bottom:0; right:0; border-width: 0 2px 2px 0; }
+    .modal-titlebar { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .modal-titlebar-label { font-family: 'VT323', monospace; font-size: 1rem; letter-spacing: 0.2em; color: var(--pink); text-shadow: 0 0 8px var(--pink); }
+    .modal-close { background: none; border: 1px solid var(--muted); color: var(--muted); width: 28px; height: 28px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-family: monospace; }
+    .modal-close:hover { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 10px var(--pink); }
+    .modal-body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+    .modal-left { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border); overflow-y: auto; }
+    .modal-cover { width: 100%; aspect-ratio: 1; position: relative; overflow: hidden; flex-shrink: 0; }
+    .modal-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-cover .vinyl { position: absolute; inset: 0; }
+    .modal-meta { padding: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border); }
+    .modal-album-name { font-size: 0.82rem; font-weight: 900; color: var(--text); line-height: 1.3; letter-spacing: 0.04em; }
+    .modal-artist-name { font-size: 0.72rem; color: var(--blue); letter-spacing: 0.07em; text-shadow: 0 0 6px rgba(0,212,255,0.4); }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.2rem; }
+    .modal-tag { font-family: 'VT323', monospace; font-size: 0.85rem; padding: 0.1rem 0.5rem; border: 1px solid var(--border); color: var(--muted); letter-spacing: 0.08em; }
+    .modal-tag.year { border-color: var(--yellow); color: var(--yellow); }
+    .modal-tag.genre { border-color: var(--purple); color: var(--purple); }
+    .modal-ext-links { display: flex; flex-direction: column; gap: 0.4rem; padding: 0 0.9rem 0.9rem; }
+    .ext-link { font-family: 'VT323', monospace; font-size: 0.9rem; letter-spacing: 0.07em; color: var(--muted); text-decoration: none; border: 1px solid var(--border); padding: 0.3rem 0.6rem; text-align: center; transition: all 0.2s; display: block; }
+    .ext-link:hover { border-color: var(--blue); color: var(--blue); box-shadow: 0 0 8px rgba(0,212,255,0.25); }
+    .modal-right { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+    /* ── In-modal player (YouTube status) ── */
+    .modal-player {
+      flex-shrink: 0;
+      background: #08081a;
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+    }
+    .mp-header {
+      font-family: 'VT323', monospace; font-size: 0.9rem;
+      letter-spacing: 0.15em; color: var(--green);
+      text-shadow: 0 0 6px var(--green); margin-bottom: 0.5rem;
+    }
+    .mp-status {
+      background: #020d04; border: 1px solid #1a4a1a;
+      padding: 0.4rem 0.8rem;
+      font-family: 'VT323', monospace; font-size: 1rem;
+      color: var(--green); letter-spacing: 0.06em;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .mp-controls {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-top: 0.5rem; flex-wrap: wrap;
+    }
+    .mp-btn {
+      background: transparent; border: 1px solid var(--green); color: var(--green);
+      font-family: 'VT323', monospace; font-size: 1rem; letter-spacing: 0.08em;
+      padding: 0.3rem 0.8rem; cursor: pointer; transition: all 0.2s;
+      text-shadow: 0 0 5px var(--green);
+    }
+    .mp-btn:hover { background: var(--green); color: #000; box-shadow: 0 0 12px var(--green); text-shadow: none; }
+    .mp-btn.rnd { border-color: var(--pink); color: var(--pink); text-shadow: 0 0 5px var(--pink); }
+    .mp-btn.rnd:hover { background: var(--pink); color: #000; box-shadow: 0 0 12px var(--pink); }
+    .mp-btn.am { border-color: var(--yellow); color: var(--yellow); text-shadow: 0 0 5px var(--yellow); text-decoration: none; }
+    .mp-btn.am:hover { background: var(--yellow); color: #000; box-shadow: 0 0 12px var(--yellow); text-shadow: none; }
+    .mp-yt-note { font-family: 'VT323', monospace; font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; letter-spacing: 0.05em; }
+
+    /* ── Detail tabs ── */
+    .detail-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .detail-tab { padding: 0.5rem 1.1rem; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .detail-tab.active { color: var(--blue); border-bottom-color: var(--blue); text-shadow: 0 0 8px var(--blue); }
+    .detail-panel { display: none; flex: 1; overflow-y: auto; }
+    .detail-panel.active { display: block; }
+
+    /* ── Track listing ── */
+    .track-list { padding: 0.5rem 0; }
+    .track-row { display: flex; align-items: center; padding: 0.45rem 1rem; border-bottom: 1px solid rgba(34,34,74,0.5); cursor: pointer; transition: background 0.15s; gap: 0.6rem; }
+    .track-row:hover { background: rgba(0,212,255,0.05); }
+    .track-row.playing { background: rgba(57,255,20,0.07); }
+    .track-num { font-family: 'VT323', monospace; font-size: 1rem; color: var(--muted); width: 1.8rem; text-align: right; flex-shrink: 0; }
+    .track-row.playing .track-num { color: var(--green); text-shadow: 0 0 6px var(--green); }
+    .track-name { flex: 1; font-size: 0.7rem; color: var(--text); letter-spacing: 0.03em; line-height: 1.3; }
+    .track-row.playing .track-name { color: var(--green); }
+    .track-dur { font-family: 'VT323', monospace; font-size: 0.9rem; color: var(--muted); flex-shrink: 0; }
+    .track-play-ico { width: 18px; flex-shrink: 0; font-size: 0.65rem; color: var(--blue); opacity: 0; transition: opacity 0.15s; }
+    .track-row:hover .track-play-ico { opacity: 1; }
+    .track-row.playing .track-play-ico { opacity: 1; color: var(--green); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .disc-label { padding: 0.4rem 1rem; font-family: 'VT323', monospace; font-size: 0.85rem; letter-spacing: 0.15em; color: var(--purple); background: rgba(191,95,255,0.05); border-bottom: 1px solid var(--border); }
+    .track-no-preview { opacity: 0.4; cursor: default; }
+    .track-no-preview:hover { background: none; }
+    .tracks-loading { text-align: center; padding: 2rem; font-family: 'VT323', monospace; font-size: 1.2rem; color: var(--muted); letter-spacing: 0.12em; }
+
+    /* ── Notes panel ── */
+    .notes-panel { padding: 1.1rem; }
+    .notes-text { font-family: 'VT323', monospace; font-size: 1.05rem; line-height: 1.7; color: var(--text); letter-spacing: 0.02em; }
+    .notes-loading { font-family: 'VT323', monospace; font-size: 1.1rem; color: var(--muted); letter-spacing: 0.1em; text-align: center; padding: 2rem; }
+    .notes-section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; color: var(--yellow); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.7rem; text-shadow: 0 0 6px rgba(255,225,53,0.4); }
+    .notes-meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.8rem; margin-bottom: 1rem; }
+    .notes-meta-key { font-family: 'VT323', monospace; font-size: 0.9rem; color: var(--muted); letter-spacing: 0.08em; white-space: nowrap; }
+    .notes-meta-val { font-family: 'VT323', monospace; font-size: 0.9rem; color: var(--text); letter-spacing: 0.04em; }
+
+    @media (max-width: 650px) {
+      .modal-body { flex-direction: column; }
+      .modal-left { width: 100%; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); max-height: 160px; overflow: hidden; }
+      .modal-cover { width: 160px; height: 160px; flex-shrink: 0; aspect-ratio: unset; }
+      .modal-meta { flex: 1; overflow: hidden; }
+      .modal-ext-links { display: none; }
+      .modal { max-height: 95vh; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NOW PLAYING BAR ═══════════ -->
+<div id="nowPlayingBar">
+  <div class="np-progress-line" id="npProgressLine"></div>
+  <img class="np-cover" id="npCover" src="" alt="" style="display:none">
+  <div class="np-cover-placeholder" id="npCoverPlaceholder" style="display:none">♪</div>
+  <div class="np-info">
+    <div class="np-label">♪ NOW PLAYING</div>
+    <div class="np-track-name" id="npTrackName">—</div>
+    <div class="np-artist-album" id="npArtistAlbum">—</div>
+  </div>
+  <span class="np-time" id="npTime"></span>
+  <div class="np-controls">
+    <button class="np-btn play-pause" id="npPlayPause" onclick="npTogglePlay()">⏸</button>
+    <button class="np-btn next-btn" onclick="npNext()" title="Random track from collection">⏭</button>
+    <button class="np-btn stop-btn" onclick="npStop()" title="Stop">✕</button>
+  </div>
+</div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header>
+  <div class="logo">VINYL<em>VAULT</em></div>
+  <div class="tagline">&gt;&gt; JOHN'S RECORD COLLECTION &gt;&gt;</div>
+</header>
+
+<!-- ═══════════ STATS BAR ═══════════ -->
+<div class="stats-bar">
+  <div>OWNED&nbsp;<b id="ownedStat">0</b></div>
+  <div>WISHLIST&nbsp;<b id="wishStat">0</b></div>
+</div>
+
+<!-- ═══════════ SEARCH ═══════════ -->
+<div class="search-wrap" id="searchWrap">
+  <input type="search" id="searchInput" placeholder="SEARCH ARTIST OR ALBUM…" oninput="handleSearch()" autocomplete="off">
+</div>
+
+<!-- ═══════════ TABS ═══════════ -->
+<div class="tabs">
+  <button class="tab-btn active" id="tabCollection" onclick="switchTab('collection')">
+    MY COLLECTION <span class="badge" id="collBadge">0</span>
+  </button>
+  <button class="tab-btn" id="tabWishlist" onclick="switchTab('wishlist')">
+    WISHLIST <span class="badge" id="wishBadge">0</span>
+  </button>
+</div>
+
+<div id="collectionView">
+  <div class="album-grid" id="albumGrid"></div>
+</div>
+
+<div id="wishlistView">
+  <div class="wishlist-add">
+    <div class="wishlist-add-inner">
+      <input class="wish-input" id="wishArtist" type="text" placeholder="ARTIST NAME" onkeydown="wishEnter(event)">
+      <input class="wish-input" id="wishAlbum"  type="text" placeholder="ALBUM TITLE"  onkeydown="wishEnter(event)">
+      <button class="btn-add" onclick="addWish()">+ ADD TO LIST</button>
+    </div>
+  </div>
+  <div class="wishlist-grid" id="wishlistGrid"></div>
+</div>
+
+<footer>&gt;&gt; VINYL VAULT v1.2 &bull; EST. 2026 &bull; KEEP ON SPINNING &lt;&lt;</footer>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-titlebar">
+      <span class="modal-titlebar-label" id="modalTitlebarLabel">▶ NOW VIEWING</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-left">
+        <div class="modal-cover" id="modalCover">
+          <div class="vinyl"><div class="vinyl-disc"><div class="vinyl-disc-inner"></div></div></div>
+        </div>
+        <div class="modal-meta">
+          <div class="modal-album-name" id="modalAlbumName">—</div>
+          <div class="modal-artist-name" id="modalArtistName">—</div>
+          <div class="modal-tags" id="modalTags"></div>
+        </div>
+        <div class="modal-ext-links" id="modalExtLinks"></div>
+      </div>
+      <div class="modal-right">
+
+        <!-- In-modal player status -->
+        <div class="modal-player">
+          <div class="mp-header">♫ TRACK PLAYER</div>
+          <div class="mp-status" id="mpStatus">▸ SELECT A TRACK OR PRESS RANDOM BELOW</div>
+          <div class="mp-controls">
+            <button class="mp-btn" id="mpPlayPause" onclick="modalTogglePlay()">▶ PLAY</button>
+            <button class="mp-btn rnd" onclick="modalPlayRandom()">♫ RANDOM</button>
+            <a class="mp-btn am" id="mpAppleMusic" href="#" target="_blank" onclick="stopPreviewAudio()">♪ APPLE</a>
+          </div>
+          <div class="mp-yt-note" id="mpYtNote"></div>
+        </div>
+
+        <div class="detail-tabs">
+          <button class="detail-tab active" id="dtabTracks" onclick="switchDetailTab('tracks')">TRACK LISTING</button>
+          <button class="detail-tab"        id="dtabNotes"  onclick="switchDetailTab('notes')">LINER NOTES</button>
+        </div>
+        <div class="detail-panel active" id="panelTracks">
+          <div class="tracks-loading" id="tracksLoading">LOADING TRACKS…</div>
+          <div class="track-list" id="trackList" style="display:none"></div>
+        </div>
+        <div class="detail-panel" id="panelNotes">
+          <div class="notes-panel">
+            <div class="notes-loading" id="notesLoading">LOADING NOTES…</div>
+            <div id="notesContent" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden YouTube container -->
+<div id="yt-container"></div>
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+// ════════════════════════════════════════
+//  COLLECTION — loaded from albums.json
+//  Edit albums.json to add/correct albums.
+// ════════════════════════════════════════
+let COLLECTION = [];
+
+// ════════════════════════════════════════
+//  WISHLIST ART CACHE (localStorage)
+//  iTunes art for wishlist albums only.
+// ════════════════════════════════════════
+const WISHLIST_ART_CACHE_KEY = 'vinylWishlistArtCache';
+let wishlistArtCache = {};
+try { wishlistArtCache = JSON.parse(localStorage.getItem(WISHLIST_ART_CACHE_KEY) || '{}'); } catch(e) {}
+function saveWishlistArtCache() { try { localStorage.setItem(WISHLIST_ART_CACHE_KEY, JSON.stringify(wishlistArtCache)); } catch(e) {} }
+
+// ════════════════════════════════════════
+//  YOUTUBE PLAYER
+// ════════════════════════════════════════
+let ytPlayer     = null;
+let ytReady      = false;
+let pendingPlay  = null;
+let progressTimer = null;
+
+// Called automatically by YT API script
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('yt-container', {
+    height: '1', width: '1',
+    playerVars: { autoplay: 0, controls: 0, modestbranding: 1, playsinline: 1, rel: 0 },
+    events: {
+      onReady(e) {
+        ytReady = true;
+        if (pendingPlay) { pendingPlay(); pendingPlay = null; }
+      },
+      onStateChange(e) {
+        const S = YT.PlayerState;
+        if (e.data === S.PLAYING) {
+          document.getElementById('npPlayPause').textContent = '⏸';
+          document.getElementById('mpPlayPause').textContent = '⏸ PAUSE';
+          startProgressTimer();
+        } else if (e.data === S.PAUSED) {
+          document.getElementById('npPlayPause').textContent = '▶';
+          document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+        } else if (e.data === S.ENDED) {
+          document.getElementById('npPlayPause').textContent = '▶';
+          document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+          stopProgressTimer();
+          document.getElementById('npProgressLine').style.width = '100%';
+        } else if (e.data === S.BUFFERING) {
+          document.getElementById('npPlayPause').textContent = '…';
+          document.getElementById('mpPlayPause').textContent = '… LOADING';
+        }
+      },
+      onError(e) {
+        setMpStatus('⚠ YOUTUBE COULD NOT FIND THIS TRACK');
+        document.getElementById('mpYtNote').textContent = '▸ Try the Discogs / YouTube links in the left panel';
+      }
+    }
+  });
+}
+
+function startProgressTimer() {
+  stopProgressTimer();
+  progressTimer = setInterval(() => {
+    if (!ytPlayer || typeof ytPlayer.getDuration !== 'function') return;
+    const dur = ytPlayer.getDuration();
+    const cur = ytPlayer.getCurrentTime();
+    if (dur > 0) {
+      const pct = (cur / dur) * 100;
+      document.getElementById('npProgressLine').style.width = pct + '%';
+      document.getElementById('npTime').textContent = fmtSec(cur) + ' / ' + fmtSec(dur);
+    }
+  }, 500);
+}
+function stopProgressTimer() {
+  if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+}
+
+// ── Piped API search (free YouTube proxy, no API key needed) ─
+// YouTube removed loadPlaylist/search from IFrame API — we get
+// the real video ID via Piped, then use loadVideoById() instead.
+const PIPED = [
+  'https://pipedapi.kavin.rocks',
+  'https://piped-api.garudalinux.org',
+  'https://api.piped.projectsegfau.lt',
+];
+
+async function searchYouTube(query) {
+  for (const base of PIPED) {
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 6000);
+      const res  = await fetch(`${base}/search?q=${encodeURIComponent(query)}&filter=videos`, { signal: ctrl.signal });
+      clearTimeout(tid);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const video = (data.items || []).find(v => v.type === 'stream' && v.url);
+      if (video) {
+        const m = video.url.match(/v=([^&]+)/);
+        if (m) return m[1];
+      }
+    } catch(e) { /* try next instance */ }
+  }
+  return null;
+}
+
+// ── Core play function ───────────────────────────────────
+// trackInfo: { artist, album, trackName, artUrl }
+async function ytPlay(trackInfo) {
+  const query = `${trackInfo.artist} ${trackInfo.trackName || trackInfo.album}`;
+
+  // Update UI immediately so bar appears while we search
+  showNowPlayingBar(trackInfo);
+  setMpStatus('▸ SEARCHING YOUTUBE…');
+  document.getElementById('mpYtNote').textContent = '';
+  currentNpTrack = trackInfo;
+
+  // Find the real video ID via Piped
+  const videoId = await searchYouTube(query);
+
+  if (!videoId) {
+    setMpStatus('⚠ NOT FOUND ON YOUTUBE — TRY THE SEARCH LINK →');
+    document.getElementById('mpYtNote').textContent = '▸ Use the YouTube search link in the left panel';
+    return;
+  }
+
+  const doPlay = () => {
+    try { ytPlayer.loadVideoById(videoId); } catch(e) { console.warn('YT play error', e); }
+  };
+
+  if (!ytReady) { pendingPlay = doPlay; } else { doPlay(); }
+
+  setMpStatus('▸ ' + (trackInfo.trackName || trackInfo.album) + '  —  ' + trackInfo.artist);
+  document.getElementById('mpYtNote').textContent =
+    `▸ Full track via YouTube${trackInfo.trackName ? '  ·  ' + trackInfo.album : ''}`;
+}
+
+// ════════════════════════════════════════
+//  NOW PLAYING BAR
+// ════════════════════════════════════════
+let currentNpTrack = null;
+
+function showNowPlayingBar(trackInfo) {
+  const bar = document.getElementById('nowPlayingBar');
+  document.getElementById('npTrackName').textContent   = trackInfo.trackName || trackInfo.album;
+  document.getElementById('npArtistAlbum').textContent = trackInfo.artist + ' · ' + trackInfo.album;
+  document.getElementById('npProgressLine').style.width = '0%';
+  document.getElementById('npTime').textContent = '';
+
+  // Cover
+  const img = document.getElementById('npCover');
+  const ph  = document.getElementById('npCoverPlaceholder');
+  if (trackInfo.artUrl) {
+    img.src = trackInfo.artUrl;
+    img.style.display = 'block';
+    ph.style.display  = 'none';
+  } else {
+    img.style.display = 'none';
+    ph.style.display  = 'block';
+  }
+
+  bar.classList.add('visible');
+  document.body.classList.add('np-active');
+
+  // Highlight playing track row in modal
+  updatePlayingRow(trackInfo.trackIdx);
+}
+
+function npTogglePlay() {
+  if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
+  const state = ytPlayer.getPlayerState();
+  if (state === YT.PlayerState.PLAYING) {
+    ytPlayer.pauseVideo();
+  } else {
+    ytPlayer.playVideo();
+  }
+}
+
+function npStop() {
+  if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
+  document.getElementById('nowPlayingBar').classList.remove('visible');
+  document.body.classList.remove('np-active');
+  stopProgressTimer();
+  document.getElementById('npProgressLine').style.width = '0%';
+  document.getElementById('npPlayPause').textContent = '⏸';
+  document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+  currentNpTrack = null;
+  updatePlayingRow(-1);
+}
+
+// "Next" – picks a random track from the all-tracks pool
+// Falls back to picking a random album if pool is empty
+function npNext() {
+  if (allTracks.length > 0) {
+    // Pick different from current
+    let candidates = allTracks;
+    if (currentNpTrack) {
+      candidates = allTracks.filter(t => !(t.trackName === currentNpTrack.trackName && t.artist === currentNpTrack.artist));
+      if (!candidates.length) candidates = allTracks;
+    }
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    ytPlay(pick);
+  } else {
+    // Pick random album, random known track name isn't available yet — search whole album
+    const rec = COLLECTION[Math.floor(Math.random() * COLLECTION.length)];
+    ytPlay({ artist: rec.artist, album: rec.album, trackName: null, artUrl: rec.artUrl || null });
+  }
+}
+
+// ════════════════════════════════════════
+//  ALL-TRACKS POOL (for random Next)
+// ════════════════════════════════════════
+let allTracks = []; // { artist, album, trackName, artUrl, trackIdx }
+
+function addTracksToPool(artist, album, tracks, artUrl) {
+  tracks.forEach((t, i) => {
+    // Avoid duplicates
+    if (!allTracks.find(x => x.artist===artist && x.trackName===t.name)) {
+      allTracks.push({ artist, album, trackName: t.name, artUrl, trackIdx: i });
+    }
+  });
+}
+
+// ════════════════════════════════════════
+//  MODAL TRACK PLAYBACK — iTunes 30s previews
+// ════════════════════════════════════════
+let currentModalRecord = null;
+let currentModalTracks = [];
+let previewAudio       = null;
+let previewPlayingIdx  = -1;
+
+function playModalTrack(idx) {
+  const t = currentModalTracks[idx];
+  if (!t || !t.preview) return;
+
+  stopPreviewAudio();
+  previewPlayingIdx = idx;
+  updatePlayingRow(idx);
+  setMpStatus('▸ ' + t.name);
+  document.getElementById('mpYtNote').textContent = '▸ 30-sec preview · Apple Music';
+  document.getElementById('mpPlayPause').textContent = '⏸ PAUSE';
+
+  previewAudio = new Audio(t.preview);
+  previewAudio.addEventListener('ended', () => {
+    document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+    updatePlayingRow(-1);
+    previewPlayingIdx = -1;
+  });
+  previewAudio.addEventListener('error', () => {
+    setMpStatus('⚠ PREVIEW UNAVAILABLE FOR THIS TRACK');
+    document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+  });
+  previewAudio.play().catch(() => {
+    setMpStatus('⚠ TAP ▶ PLAY TO START (browser autoplay policy)');
+    document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+  });
+}
+
+function stopPreviewAudio() {
+  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+  previewPlayingIdx = -1;
+  updatePlayingRow(-1);
+}
+
+function modalTogglePlay() {
+  if (!previewAudio) { modalPlayRandom(); return; }
+  if (previewAudio.paused) {
+    previewAudio.play();
+    document.getElementById('mpPlayPause').textContent = '⏸ PAUSE';
+  } else {
+    previewAudio.pause();
+    document.getElementById('mpPlayPause').textContent = '▶ PLAY';
+  }
+}
+
+function modalPlayRandom() {
+  if (!currentModalTracks.length) return;
+  const withPreview = currentModalTracks.map((_,i)=>i).filter(i=>currentModalTracks[i].preview);
+  if (!withPreview.length) { setMpStatus('⚠ NO PREVIEWS AVAILABLE FOR THIS ALBUM'); return; }
+  let pick;
+  do { pick = withPreview[Math.floor(Math.random()*withPreview.length)]; }
+  while (pick === previewPlayingIdx && withPreview.length > 1);
+  playModalTrack(pick);
+}
+
+function updatePlayingRow(playingIdx) {
+  document.querySelectorAll('.track-row').forEach((r, i) => {
+    r.classList.toggle('playing', i === playingIdx);
+  });
+}
+
+function setMpStatus(text) {
+  document.getElementById('mpStatus').textContent = text;
+}
+
+async function fetchWishlistArt(artist, album) {
+  const key = artist + '|' + album;
+  if (wishlistArtCache[key] !== undefined) return wishlistArtCache[key];
+
+  const isTBD = album.toLowerCase() === 'tbd';
+  const queries = isTBD ? [artist] : [artist + ' ' + album, album, artist];
+  const artistWord = artist.toLowerCase().replace(/^the\s+/, '').split(/\s+/)[0];
+  for (const q of queries) {
+    try {
+      const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=album&limit=15`);
+      const { results } = await res.json();
+      if (results && results.length) {
+        const pool = results.filter(r => r.artistName.toLowerCase().includes(artistWord));
+        const candidates = pool.length ? pool : results;
+        const best = candidates.sort((a, b) => {
+          const penalty = r => /remaster|deluxe|anniversary|expanded/i.test(r.collectionName || '') ? 1 : 0;
+          return penalty(a) - penalty(b);
+        })[0];
+        const url = best.artworkUrl100.replace('100x100bb', '600x600bb');
+        wishlistArtCache[key] = url;
+        saveWishlistArtCache();
+        return url;
+      }
+    } catch(e) {}
+  }
+  wishlistArtCache[key] = null;
+  saveWishlistArtCache();
+  return null;
+}
+
+function vinylHTML() {
+  return `<div class="vinyl"><div class="vinyl-disc"><div class="vinyl-disc-inner"></div></div></div>`;
+}
+
+function fmtMs(ms) { const s=Math.floor(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function fmtSec(s) { return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ════════════════════════════════════════
+//  RENDER COLLECTION
+// ════════════════════════════════════════
+function renderCollection(records) {
+  const grid = document.getElementById('albumGrid');
+  document.getElementById('collBadge').textContent = records.length;
+  if (!records.length) { grid.innerHTML='<div class="empty">&gt; NO RECORDS FOUND &lt;</div>'; return; }
+  grid.innerHTML = records.map(r => {
+    const i = COLLECTION.indexOf(r);
+    return `
+      <div class="card" onclick="openModal(${i})">
+        <div class="cover-wrap">
+          ${vinylHTML()}
+          <img alt="${esc(r.album)}" data-artist="${esc(r.artist)}" data-album="${esc(r.album)}">
+          <div class="card-hover-hint">▶ VIEW DETAILS</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title" title="${esc(r.album)}">${esc(r.album)}</div>
+          <div class="card-artist">${esc(r.artist)}</div>
+        </div>
+        <div class="card-year">${r.year}</div>
+      </div>`;
+  }).join('');
+  grid.querySelectorAll('img[data-artist]').forEach(img => {
+    const rec = COLLECTION.find(r => r.artist === img.dataset.artist && r.album === img.dataset.album);
+    if (!rec?.artUrl) return;
+    img.onload = () => {
+      img.style.display = 'block';
+      const v = img.closest('.cover-wrap')?.querySelector('.vinyl');
+      if (v) v.style.display = 'none';
+    };
+    img.onerror = () => { img.onerror = null; };
+    img.src = rec.artUrl;
+  });
+}
+
+// ════════════════════════════════════════
+//  WISHLIST
+// ════════════════════════════════════════
+const WISHLIST_DEFAULTS = [
+  { artist:"The Struts",              album:"Young & Dangerous" },
+  { artist:"Keane",                   album:"Hopes and Fears" },
+  { artist:"Iron Maiden",             album:"Iron Maiden" },
+  { artist:"Iron Maiden",             album:"Powerslave" },
+  { artist:"Kate Bush",               album:"The Whole Story" },
+  { artist:"The Alan Parsons Project",album:"The Turn of a Friendly Card" },
+  { artist:"Sting",                   album:"Mercury Falling (Expanded Edition)" },
+  { artist:"Sting",                   album:"Ten Summoner's Tales" },
+  { artist:"Yes",                     album:"90125" },
+  { artist:"XTC",                     album:"Fossil Fuel: The XTC Singles 1977–1992" },
+  { artist:"Wilson Phillips",         album:"Wilson Phillips" },
+  { artist:"Voice of the Beehive",    album:"Let It Bee" },
+  { artist:"Tom Waits",               album:"The Heart of Saturday Night" },
+  { artist:"Thin Lizzy",              album:"Chinatown" },
+  { artist:"Duran Duran",             album:"TBD" },
+  { artist:"George Michael",          album:"TBD" },
+];
+let wishlist = [];
+try { wishlist = JSON.parse(localStorage.getItem('vinylWishlist')||'[]'); } catch(e){}
+// Seed defaults that aren't already in the list
+WISHLIST_DEFAULTS.forEach(d => {
+  const exists = wishlist.some(w => w.artist.toLowerCase()===d.artist.toLowerCase() && w.album.toLowerCase()===d.album.toLowerCase());
+  if (!exists) wishlist.push(d);
+});
+try { localStorage.setItem('vinylWishlist', JSON.stringify(wishlist)); } catch(e){}
+function saveWishlist() { try{localStorage.setItem('vinylWishlist',JSON.stringify(wishlist));}catch(e){} }
+
+function renderWishlist() {
+  const grid = document.getElementById('wishlistGrid');
+  document.getElementById('wishBadge').textContent = wishlist.length;
+  document.getElementById('wishStat').textContent  = wishlist.length;
+  if (!wishlist.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1">&gt; YOUR WISHLIST IS EMPTY — ADD RECORDS YOU\'RE HUNTING ABOVE &lt;</div>'; return; }
+  grid.innerHTML = wishlist.map((w,i) => `
+    <div class="card" style="cursor:default;">
+      <div class="cover-wrap">
+        ${vinylHTML()}
+        <img alt="${esc(w.album)}" data-artist="${esc(w.artist)}" data-album="${esc(w.album)}">
+        <div class="hunting-badge">HUNTING</div>
+        <button class="remove-wish" onclick="removeWish(${i})">✕</button>
+      </div>
+      <div class="card-info">
+        <div class="card-title" title="${w.album}">${w.album}</div>
+        <div class="card-artist">${w.artist}</div>
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('img[data-artist]').forEach((img, i) => {
+    setTimeout(async () => {
+      const url = await fetchWishlistArt(img.dataset.artist, img.dataset.album);
+      if (url) {
+        img.onload = () => {
+          img.style.display = 'block';
+          const v = img.closest('.cover-wrap')?.querySelector('.vinyl');
+          if (v) v.style.display = 'none';
+        };
+        img.onerror = () => { img.onerror = null; };
+        img.src = url;
+      }
+    }, i * 250);
+  });
+}
+function addWish() {
+  const a=document.getElementById('wishArtist').value.trim(), b=document.getElementById('wishAlbum').value.trim();
+  if(!a&&!b) return;
+  wishlist.push({artist:a||'?',album:b||'?'});
+  saveWishlist();
+  document.getElementById('wishArtist').value='';
+  document.getElementById('wishAlbum').value='';
+  renderWishlist();
+}
+function removeWish(i) { wishlist.splice(i,1); saveWishlist(); renderWishlist(); }
+function wishEnter(e) { if(e.key==='Enter') addWish(); }
+
+function handleSearch() {
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  renderCollection(COLLECTION.filter(r=>r.artist.toLowerCase().includes(q)||r.album.toLowerCase().includes(q)));
+}
+function switchTab(tab) {
+  const c=tab==='collection';
+  document.getElementById('collectionView').style.display=c?'block':'none';
+  document.getElementById('wishlistView').style.display=c?'none':'block';
+  document.getElementById('searchWrap').style.display=c?'block':'none';
+  document.getElementById('tabCollection').className='tab-btn'+(c?' active':'');
+  document.getElementById('tabWishlist').className='tab-btn'+(!c?' active':'');
+  if(!c) document.getElementById('searchInput').value='';
+}
+
+// ════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════
+function openModal(idx) {
+  currentModalRecord = COLLECTION[idx];
+  currentModalTracks = [];
+
+  switchDetailTab('tracks');
+  document.getElementById('tracksLoading').style.display='';
+  document.getElementById('trackList').style.display='none';
+  document.getElementById('notesLoading').style.display='';
+  document.getElementById('notesContent').style.display='none';
+  setMpStatus('▸ SELECT A TRACK OR PRESS RANDOM BELOW');
+  document.getElementById('mpYtNote').textContent='';
+  document.getElementById('mpPlayPause').textContent='▶ PLAY';
+  stopPreviewAudio();
+
+  const rec = currentModalRecord;
+  document.getElementById('modalTitlebarLabel').textContent = '▶ '+rec.artist.toUpperCase();
+  document.getElementById('modalAlbumName').textContent  = rec.album;
+  document.getElementById('modalArtistName').textContent = rec.artist;
+  document.getElementById('modalTags').innerHTML = `<span class="modal-tag year">${rec.year}</span>`;
+
+  const coverEl = document.getElementById('modalCover');
+  coverEl.innerHTML = vinylHTML();
+  if (rec.artUrl) coverEl.innerHTML = `<img src="${rec.artUrl}" alt="${rec.album}">`;
+
+  const q = encodeURIComponent(rec.artist+' '+rec.album);
+  document.getElementById('mpAppleMusic').href = `https://music.apple.com/search?term=${q}`;
+  document.getElementById('modalExtLinks').innerHTML = `
+    <a class="ext-link" href="https://www.discogs.com/search/?q=${q}&type=release" target="_blank">⧉ SEARCH DISCOGS</a>
+    <a class="ext-link" href="https://www.youtube.com/results?search_query=${q}" target="_blank">⧉ SEARCH YOUTUBE</a>
+    <a class="ext-link" href="https://en.wikipedia.org/w/index.php?search=${q}" target="_blank">⧉ SEARCH WIKIPEDIA</a>`;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  loadTracks(rec.artist, rec.album, rec.year);
+  loadNotes(rec.artist, rec.album, rec.year);
+}
+
+function closeModal() {
+  stopPreviewAudio();
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function overlayClick(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ── Load tracks via iTunes ───────────────────────────────
+async function loadTracks(artist, album, year) {
+  const loadingEl = document.getElementById('tracksLoading');
+  const listEl    = document.getElementById('trackList');
+  try {
+    const q   = encodeURIComponent(artist+' '+album);
+    const res = await fetch(`https://itunes.apple.com/search?term=${q}&entity=album&limit=25`);
+    const d   = await res.json();
+    if (!d.results?.length) throw new Error('no results');
+
+    // Normalize for fuzzy comparison: strip non-alphanumeric so punctuation and
+    // apostrophes don't prevent a match (e.g. "Guns N' Roses" → "gunsnroses")
+    const norm    = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const nArtist = norm(artist);
+    const nAlbum  = norm(album);
+
+    // Artist match is a hard requirement — never return the wrong artist's tracks
+    const byArtist = d.results.filter(r => {
+      const rArtist = norm(r.artistName || '');
+      return rArtist.includes(nArtist) || nArtist.includes(rArtist);
+    });
+    if (!byArtist.length) throw new Error('no artist match');
+
+    // Among artist matches, pick the best album name match
+    const scored = byArtist.map(r => {
+      const rAlbum = norm(r.collectionName || '');
+      let score = 0;
+      if (rAlbum === nAlbum)                                        score += 4;
+      else if (rAlbum.includes(nAlbum) || nAlbum.includes(rAlbum)) score += 2;
+      if (/remaster|deluxe|anniversary|expanded/i.test(r.collectionName || '')) score -= 1;
+      return { r, score };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    const match = scored[0].r;
+    if (match.primaryGenreName) {
+      document.getElementById('modalTags').innerHTML += `<span class="modal-tag genre">${match.primaryGenreName.toUpperCase()}</span>`;
+    }
+
+    const lr   = await fetch(`https://itunes.apple.com/lookup?id=${match.collectionId}&entity=song`);
+    const ld   = await lr.json();
+    const tracks = ld.results.filter(r=>r.wrapperType==='track').sort((a,b)=>(a.discNumber-b.discNumber)||(a.trackNumber-b.trackNumber));
+
+    currentModalTracks = tracks.map(t=>({ number:t.trackNumber, disc:t.discNumber||1, name:t.trackName, dur:t.trackTimeMillis?fmtMs(t.trackTimeMillis):'--:--', preview:t.previewUrl||null }));
+
+    // Add to global pool
+    const artUrl = document.getElementById('modalCover').querySelector('img')?.src || null;
+    addTracksToPool(artist, album, currentModalTracks, artUrl);
+
+    const maxDisc = Math.max(...currentModalTracks.map(t=>t.disc));
+    let html=''; let lastDisc=0;
+    currentModalTracks.forEach((t,i) => {
+      if (maxDisc>1 && t.disc!==lastDisc) { html+=`<div class="disc-label">◈ SIDE ${['A','B','C','D'][t.disc-1]||t.disc}</div>`; lastDisc=t.disc; }
+      const noP = !t.preview;
+      html+=`<div class="track-row${noP?' track-no-preview':''}" id="trow-${i}" ${noP?'':'onclick="playModalTrack('+i+')"'}>
+        <span class="track-play-ico">${noP?'·':'▶'}</span>
+        <span class="track-num">${String(t.number).padStart(2,'0')}</span>
+        <span class="track-name">${t.name}</span>
+        <span class="track-dur">${t.dur}</span>
+      </div>`;
+    });
+
+    listEl.innerHTML = html;
+    loadingEl.style.display='none';
+    listEl.style.display='';
+
+    // Auto-play random track
+    const randomIdx = Math.floor(Math.random()*currentModalTracks.length);
+    playModalTrack(randomIdx);
+
+  } catch(e) {
+    loadingEl.textContent='⚠ COULD NOT LOAD TRACK LISTING — TRY YOUTUBE SEARCH LINK';
+  }
+}
+
+// ── Load Wikipedia notes ─────────────────────────────────
+async function loadNotes(artist, album, year) {
+  const loadingEl = document.getElementById('notesLoading');
+  const contentEl = document.getElementById('notesContent');
+  try {
+    const sq  = encodeURIComponent(artist+' '+album+' album');
+    const sr  = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${sq}&format=json&origin=*&srlimit=3`);
+    const sd  = await sr.json();
+    const pages = sd.query?.search||[];
+    if (!pages.length) throw new Error('no wiki');
+    const words = album.toLowerCase().split(/\s+/).filter(w=>w.length>3);
+    const best  = pages.find(p=>words.some(w=>p.title.toLowerCase().includes(w)))||pages[0];
+    const er   = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&pageids=${best.pageid}&format=json&origin=*`);
+    const ed   = await er.json();
+    const extract = ed.query?.pages?.[best.pageid]?.extract||'';
+    const paras   = extract.split('\n').filter(p=>p.trim().length>60).slice(0,4);
+
+    let html=`<div class="notes-section-title">ALBUM INFO</div>
+      <div class="notes-meta-grid">
+        <span class="notes-meta-key">ARTIST</span><span class="notes-meta-val">${artist}</span>
+        <span class="notes-meta-key">ALBUM</span><span class="notes-meta-val">${album}</span>
+        <span class="notes-meta-key">YEAR</span><span class="notes-meta-val">${year}</span>
+        <span class="notes-meta-key">TRACKS</span><span class="notes-meta-val">${currentModalTracks.length||'—'}</span>
+      </div>`;
+    if (paras.length) {
+      html+=`<div class="notes-section-title" style="margin-top:1rem">BACKGROUND</div>`;
+      paras.forEach(p=>{ html+=`<p class="notes-text" style="margin-bottom:0.8rem">${p}</p>`; });
+      html+=`<p style="margin-top:0.5rem;font-family:'VT323',monospace;font-size:0.8rem;color:var(--muted)">Source: Wikipedia (CC BY-SA)</p>`;
+    }
+    contentEl.innerHTML=html;
+    loadingEl.style.display='none';
+    contentEl.style.display='';
+  } catch(e) {
+    loadingEl.innerHTML=`<div class="notes-section-title">ALBUM INFO</div>
+      <div class="notes-meta-grid">
+        <span class="notes-meta-key">ARTIST</span><span class="notes-meta-val">${artist}</span>
+        <span class="notes-meta-key">ALBUM</span><span class="notes-meta-val">${album}</span>
+        <span class="notes-meta-key">YEAR</span><span class="notes-meta-val">${year}</span>
+      </div>
+      <p style="font-family:'VT323',monospace;font-size:0.9rem;color:var(--muted);margin-top:1rem">⚠ NOTES UNAVAILABLE — USE SEARCH LINKS FOR MORE INFO</p>`;
+    contentEl.style.display='';
+    loadingEl.style.display='none';
+  }
+}
+
+function switchDetailTab(tab) {
+  document.getElementById('dtabTracks').className='detail-tab'+(tab==='tracks'?' active':'');
+  document.getElementById('dtabNotes').className ='detail-tab'+(tab==='notes'?' active':'');
+  document.getElementById('panelTracks').className='detail-panel'+(tab==='tracks'?' active':'');
+  document.getElementById('panelNotes').className ='detail-panel'+(tab==='notes'?' active':'');
+}
+
+// ════════════════════════════════════════
+//  INIT — loads albums.json then renders
+// ════════════════════════════════════════
+(async function init() {
+  try {
+    const res = await fetch('albums.json');
+    COLLECTION = await res.json();
+  } catch(e) {
+    console.error('Could not load albums.json', e);
+    COLLECTION = [];
+  }
+  document.getElementById('ownedStat').textContent = COLLECTION.length;
+  document.getElementById('collBadge').textContent = COLLECTION.length;
+  renderCollection(COLLECTION);
+  renderWishlist();
+})();
+</script>
+</body>
+</html>

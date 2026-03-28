@@ -1,0 +1,716 @@
+[
+  {
+    "artist": "Alison Moyet",
+    "album": "Alf",
+    "year": 1984,
+    "artUrl": "art/Alison_Moyet_-_Alf.jpg"
+  },
+  {
+    "artist": "Bleachers",
+    "album": "Bleachers",
+    "year": 2024,
+    "artUrl": "art/Bleachers_-_Bleachers.jpg"
+  },
+  {
+    "artist": "Blondie",
+    "album": "Parallel Lines",
+    "year": 1978,
+    "artUrl": "art/Blondie_-_Parallel_Lines.jpg"
+  },
+  {
+    "artist": "Bob Dylan & The Band",
+    "album": "Before the Flood",
+    "year": 1974,
+    "artUrl": "art/Bob_Dylan_The_Band_-_Before_the_Flood.jpg"
+  },
+  {
+    "artist": "Bruce Springsteen",
+    "album": "Born in the U.S.A.",
+    "year": 1984,
+    "artUrl": "art/Bruce_Springsteen_-_Born_in_the_USA.jpg"
+  },
+  {
+    "artist": "Bryan Ferry & Roxy Music",
+    "album": "Street Life: 20 Greatest Hits",
+    "year": 1986,
+    "artUrl": "art/Bryan_Ferry_Roxy_Music_-_Street_Life_20_Greatest_Hits.jpg"
+  },
+  {
+    "artist": "Buena Vista Social Club",
+    "album": "Buena Vista Social Club",
+    "year": 1997,
+    "artUrl": "art/Buena_Vista_Social_Club_-_Buena_Vista_Social_Club.jpg"
+  },
+  {
+    "artist": "Cardinal Black",
+    "album": "January Came Close",
+    "year": 2022,
+    "artUrl": "art/Cardinal_Black_-_January_Came_Close.jpg"
+  },
+  {
+    "artist": "Chickenfoot",
+    "album": "Chickenfoot",
+    "year": 2009,
+    "artUrl": "art/Chickenfoot_-_Chickenfoot.jpg"
+  },
+  {
+    "artist": "Climie Fisher",
+    "album": "Everything",
+    "year": 1987,
+    "artUrl": "art/Climie_Fisher_-_Everything.jpg"
+  },
+  {
+    "artist": "Coverdale/Page",
+    "album": "Coverdale·Page",
+    "year": 1993,
+    "artUrl": "art/CoverdalePage_-_CoverdalePage.jpg"
+  },
+  {
+    "artist": "Cutting Crew",
+    "album": "Broadcast",
+    "year": 1986,
+    "artUrl": "art/Cutting_Crew_-_Broadcast.jpg"
+  },
+  {
+    "artist": "Daisy Jones & The Six",
+    "album": "Aurora",
+    "year": 2023,
+    "artUrl": "art/Daisy_Jones_The_Six_-_Aurora.jpg"
+  },
+  {
+    "artist": "David Bowie",
+    "album": "The Best of Bowie",
+    "year": 1980,
+    "artUrl": "art/David_Bowie_-_The_Best_of_Bowie.jpg"
+  },
+  {
+    "artist": "David Bowie",
+    "album": "The Rise and Fall of Ziggy Stardust",
+    "year": 1972,
+    "artUrl": "art/David_Bowie_-_The_Rise_and_Fall_of_Ziggy_Stardust.jpg"
+  },
+  {
+    "artist": "David Bowie",
+    "album": "Tonight",
+    "year": 1984,
+    "artUrl": "art/David_Bowie_-_Tonight.jpg"
+  },
+  {
+    "artist": "Def Leppard",
+    "album": "Hysteria",
+    "year": 1987,
+    "artUrl": "art/Def_Leppard_-_Hysteria.jpg"
+  },
+  {
+    "artist": "Dire Straits",
+    "album": "Love Over Gold",
+    "year": 1982,
+    "artUrl": "art/Dire_Straits_-_Love_Over_Gold.jpg"
+  },
+  {
+    "artist": "Dire Straits",
+    "album": "Making Movies",
+    "year": 1980,
+    "artUrl": "art/Dire_Straits_-_Making_Movies.jpg"
+  },
+  {
+    "artist": "Electric Light Orchestra",
+    "album": "Out of the Blue",
+    "year": 1977,
+    "artUrl": "art/Electric_Light_Orchestra_-_Out_of_the_Blue.jpg"
+  },
+  {
+    "artist": "Erasure",
+    "album": "The Innocents",
+    "year": 1988,
+    "artUrl": "art/Erasure_-_The_Innocents.jpg"
+  },
+  {
+    "artist": "Eric Clapton",
+    "album": "461 Ocean Boulevard",
+    "year": 1974,
+    "artUrl": "art/Eric_Clapton_-_461_Ocean_Boulevard.jpg"
+  },
+  {
+    "artist": "Eric Serra",
+    "album": "Le Grand Bleu (Soundtrack)",
+    "year": 1988,
+    "artUrl": "art/Eric_Serra_-_Le_Grand_Bleu_Soundtrack.jpg"
+  },
+  {
+    "artist": "Eurythmics",
+    "album": "Be Yourself Tonight",
+    "year": 1985,
+    "artUrl": "art/Eurythmics_-_Be_Yourself_Tonight.jpg"
+  },
+  {
+    "artist": "Eurythmics",
+    "album": "Savage",
+    "year": 1987,
+    "artUrl": "art/Eurythmics_-_Savage.jpg"
+  },
+  {
+    "artist": "Fleetwood Mac",
+    "album": "Fleetwood Mac",
+    "year": 1975,
+    "artUrl": "art/Fleetwood_Mac_-_Fleetwood_Mac.jpg"
+  },
+  {
+    "artist": "Fleetwood Mac",
+    "album": "Rumours",
+    "year": 1977,
+    "artUrl": "art/Fleetwood_Mac_-_Rumours.jpg"
+  },
+  {
+    "artist": "Frank Zappa",
+    "album": "Joe's Garage Acts I, II & III",
+    "year": 1979,
+    "artUrl": "art/Frank_Zappa_-_Joes_Garage_Acts_I_II_III.jpg"
+  },
+  {
+    "artist": "Frank Zappa",
+    "album": "You Are What You Is",
+    "year": 1981,
+    "artUrl": "art/Frank_Zappa_-_You_Are_What_You_Is.jpg"
+  },
+  {
+    "artist": "Frankie Goes to Hollywood",
+    "album": "Relax (12\" Single)",
+    "year": 1983,
+    "artUrl": "art/Frankie_Goes_to_Hollywood_-_Relax_12_Single.jpg"
+  },
+  {
+    "artist": "Gillan",
+    "album": "Double Trouble",
+    "year": 1981,
+    "artUrl": "art/Gillan_-_Double_Trouble.jpg"
+  },
+  {
+    "artist": "Grace Jones",
+    "album": "Island Life",
+    "year": 1985,
+    "artUrl": "art/Grace_Jones_-_Island_Life.jpg"
+  },
+  {
+    "artist": "Guns N' Roses",
+    "album": "Appetite for Destruction",
+    "year": 1987,
+    "artUrl": "art/Guns_N_Roses_-_Appetite_for_Destruction.jpg"
+  },
+  {
+    "artist": "Iron Maiden",
+    "album": "Killers",
+    "year": 1981,
+    "artUrl": "art/Iron_Maiden_-_Killers.jpg"
+  },
+  {
+    "artist": "Iron Maiden",
+    "album": "The Number of the Beast",
+    "year": 1982,
+    "artUrl": "art/Iron_Maiden_-_The_Number_of_the_Beast.jpg"
+  },
+  {
+    "artist": "Jeff Wayne",
+    "album": "The War of the Worlds",
+    "year": 1978,
+    "artUrl": "art/Jeff_Wayne_-_The_War_of_the_Worlds.jpg"
+  },
+  {
+    "artist": "Jethro Tull",
+    "album": "Stormwatch",
+    "year": 1979,
+    "artUrl": "art/Jethro_Tull_-_Stormwatch.jpg"
+  },
+  {
+    "artist": "John Cougar",
+    "album": "American Fool",
+    "year": 1982,
+    "artUrl": "art/John_Cougar_-_American_Fool.jpg"
+  },
+  {
+    "artist": "Journey",
+    "album": "Escape",
+    "year": 1981,
+    "artUrl": "art/Journey_-_Escape.jpg"
+  },
+  {
+    "artist": "Kate Bush",
+    "album": "The Kick Inside",
+    "year": 1978,
+    "artUrl": "art/Kate_Bush_-_The_Kick_Inside.jpg"
+  },
+  {
+    "artist": "Katrina and the Waves",
+    "album": "Katrina and the Waves",
+    "year": 1985,
+    "artUrl": "art/Katrina_and_the_Waves_-_Katrina_and_the_Waves.jpg"
+  },
+  {
+    "artist": "Kim Carnes",
+    "album": "Mistaken Identity",
+    "year": 1981,
+    "artUrl": "art/Kim_Carnes_-_Mistaken_Identity.jpg"
+  },
+  {
+    "artist": "Kiss",
+    "album": "Alive!",
+    "year": 1975,
+    "artUrl": "art/Kiss_-_Alive.jpg"
+  },
+  {
+    "artist": "Kiss",
+    "album": "Dynasty",
+    "year": 1979,
+    "artUrl": "art/Kiss_-_Dynasty.jpg"
+  },
+  {
+    "artist": "Krokus",
+    "album": "One Vice at a Time",
+    "year": 1982,
+    "artUrl": "art/Krokus_-_One_Vice_at_a_Time.jpg"
+  },
+  {
+    "artist": "Led Zeppelin",
+    "album": "II",
+    "year": 1969,
+    "artUrl": "art/Led_Zeppelin_-_II.jpg"
+  },
+  {
+    "artist": "Led Zeppelin",
+    "album": "IV",
+    "year": 1971,
+    "artUrl": "art/Led_Zeppelin_-_IV.jpg"
+  },
+  {
+    "artist": "Madness",
+    "album": "7",
+    "year": 1981,
+    "artUrl": "art/Madness_-_7.jpg"
+  },
+  {
+    "artist": "Madonna",
+    "album": "Like a Prayer",
+    "year": 1989,
+    "artUrl": "art/Madonna_-_Like_a_Prayer.jpg"
+  },
+  {
+    "artist": "Madonna",
+    "album": "Live to Tell (12\" Single)",
+    "year": 1986,
+    "artUrl": "art/Madonna_-_Live_to_Tell_12_Single.jpg"
+  },
+  {
+    "artist": "Manfred Mann's Earth Band",
+    "album": "Angel Station",
+    "year": 1979,
+    "artUrl": "art/Manfred_Manns_Earth_Band_-_Angel_Station.jpg"
+  },
+  {
+    "artist": "Matt Bianco",
+    "album": "Matt Bianco",
+    "year": 1986,
+    "artUrl": "art/Matt_Bianco_-_Matt_Bianco.jpg"
+  },
+  {
+    "artist": "Meat Loaf",
+    "album": "Bat Out of Hell",
+    "year": 1977,
+    "artUrl": "art/Meat_Loaf_-_Bat_Out_of_Hell.jpg"
+  },
+  {
+    "artist": "Men at Work",
+    "album": "Business as Usual",
+    "year": 1981,
+    "artUrl": "art/Men_at_Work_-_Business_as_Usual.jpg"
+  },
+  {
+    "artist": "Mike Oldfield",
+    "album": "Tubular Bells",
+    "year": 1973,
+    "artUrl": "art/Mike_Oldfield_-_Tubular_Bells.jpg"
+  },
+  {
+    "artist": "Montrose",
+    "album": "Montrose",
+    "year": 1973,
+    "artUrl": "art/Montrose_-_Montrose.jpg"
+  },
+  {
+    "artist": "Neil Diamond",
+    "album": "The Jazz Singer",
+    "year": 1980,
+    "artUrl": "art/Neil_Diamond_-_The_Jazz_Singer.jpg"
+  },
+  {
+    "artist": "New Order",
+    "album": "Low-life",
+    "year": 1985,
+    "artUrl": "art/New_Order_-_Low-life.jpg"
+  },
+  {
+    "artist": "Oscar Peterson Trio",
+    "album": "Affinity",
+    "year": 1962,
+    "artUrl": "art/Oscar_Peterson_Trio_-_Affinity.jpg"
+  },
+  {
+    "artist": "Pat Metheny Group",
+    "album": "First Circle",
+    "year": 1984,
+    "artUrl": "art/Pat_Metheny_Group_-_First_Circle.jpg"
+  },
+  {
+    "artist": "Peter Gabriel",
+    "album": "So",
+    "year": 1986,
+    "artUrl": "art/Peter_Gabriel_-_So.jpg"
+  },
+  {
+    "artist": "Phil Collins",
+    "album": "No Jacket Required",
+    "year": 1985,
+    "artUrl": "art/Phil_Collins_-_No_Jacket_Required.jpg"
+  },
+  {
+    "artist": "Pink Floyd",
+    "album": "The Final Cut",
+    "year": 1983,
+    "artUrl": "art/Pink_Floyd_-_The_Final_Cut.jpg"
+  },
+  {
+    "artist": "Pink Floyd",
+    "album": "The Wall",
+    "year": 1979,
+    "artUrl": "art/Pink_Floyd_-_The_Wall.jpg"
+  },
+  {
+    "artist": "Prince",
+    "album": "Around the World in a Day",
+    "year": 1985,
+    "artUrl": "art/Prince_-_Around_the_World_in_a_Day.jpg"
+  },
+  {
+    "artist": "Prince",
+    "album": "Purple Rain",
+    "year": 1984,
+    "artUrl": "art/Prince_-_Purple_Rain.jpg"
+  },
+  {
+    "artist": "Queen",
+    "album": "Queen II",
+    "year": 1974,
+    "artUrl": "art/Queen_-_Queen_II.jpg"
+  },
+  {
+    "artist": "Radiohead",
+    "album": "The Bends",
+    "year": 1995,
+    "artUrl": "art/Radiohead_-_The_Bends.jpg"
+  },
+  {
+    "artist": "Rag 'n' Bone Man",
+    "album": "Life by Misadventure",
+    "year": 2021,
+    "artUrl": "art/Rag_n_Bone_Man_-_Life_by_Misadventure.jpg"
+  },
+  {
+    "artist": "Rainbow",
+    "album": "Difficult to Cure",
+    "year": 1981,
+    "artUrl": "art/Rainbow_-_Difficult_to_Cure.jpg"
+  },
+  {
+    "artist": "Rainbow",
+    "album": "Down to Earth",
+    "year": 1979,
+    "artUrl": "art/Rainbow_-_Down_to_Earth.jpg"
+  },
+  {
+    "artist": "Rainbow",
+    "album": "Long Live Rock 'n' Roll",
+    "year": 1978,
+    "artUrl": "art/Rainbow_-_Long_Live_Rock_n_Roll.jpg"
+  },
+  {
+    "artist": "Rainbow",
+    "album": "Rising",
+    "year": 1976,
+    "artUrl": "art/Rainbow_-_Rising.jpg"
+  },
+  {
+    "artist": "Rainbow",
+    "album": "Ritchie Blackmore's Rainbow",
+    "year": 1975,
+    "artUrl": "art/Rainbow_-_Ritchie_Blackmores_Rainbow.jpg"
+  },
+  {
+    "artist": "Rolling Stones",
+    "album": "Big Hits (High Tide and Green Grass)",
+    "year": 1966,
+    "artUrl": "art/Rolling_Stones_-_Big_Hits_High_Tide_and_Green_Grass.jpg"
+  },
+  {
+    "artist": "Rush",
+    "album": "Archives",
+    "year": 1978,
+    "artUrl": "art/Rush_-_Archives.jpg"
+  },
+  {
+    "artist": "Sammy Hagar",
+    "album": "I Never Said Goodbye",
+    "year": 1987,
+    "artUrl": "art/Sammy_Hagar_-_I_Never_Said_Goodbye.jpg"
+  },
+  {
+    "artist": "Sister Sledge",
+    "album": "Lost in Music (12\" Single)",
+    "year": 1984,
+    "artUrl": "art/Sister_Sledge_-_Lost_in_Music_12_Single.jpg"
+  },
+  {
+    "artist": "Slade",
+    "album": "Slayed?",
+    "year": 1972,
+    "artUrl": "art/Slade_-_Slayed.jpg"
+  },
+  {
+    "artist": "Spear of Destiny",
+    "album": "Outland",
+    "year": 1987,
+    "artUrl": "art/Spear_of_Destiny_-_Outland.jpg"
+  },
+  {
+    "artist": "Squeeze",
+    "album": "Singles — 45s and Under",
+    "year": 1982,
+    "artUrl": "art/Squeeze_-_Singles_45s_and_Under.jpg"
+  },
+  {
+    "artist": "Steve Winwood",
+    "album": "Back in the High Life",
+    "year": 1986,
+    "artUrl": "art/Steve_Winwood_-_Back_in_the_High_Life.jpg"
+  },
+  {
+    "artist": "Stevie Nicks",
+    "album": "Bella Donna",
+    "year": 1981,
+    "artUrl": "art/Stevie_Nicks_-_Bella_Donna.jpg"
+  },
+  {
+    "artist": "Stevie Nicks",
+    "album": "The Wild Heart",
+    "year": 1983,
+    "artUrl": "art/Stevie_Nicks_-_The_Wild_Heart.jpg"
+  },
+  {
+    "artist": "Styx",
+    "album": "Paradise Theatre",
+    "year": 1981,
+    "artUrl": "art/Styx_-_Paradise_Theatre.jpg"
+  },
+  {
+    "artist": "Supertramp",
+    "album": "Breakfast in America",
+    "year": 1979,
+    "artUrl": "art/Supertramp_-_Breakfast_in_America.jpg"
+  },
+  {
+    "artist": "Swing Out Sister",
+    "album": "It's Better to Travel",
+    "year": 1987,
+    "artUrl": "art/Swing_Out_Sister_-_Its_Better_to_Travel.jpg"
+  },
+  {
+    "artist": "T'Pau",
+    "album": "Rage",
+    "year": 1988,
+    "artUrl": "art/TPau_-_Rage.jpg"
+  },
+  {
+    "artist": "The Alan Parsons Project",
+    "album": "Eye in the Sky",
+    "year": 1982,
+    "artUrl": "art/The_Alan_Parsons_Project_-_Eye_in_the_Sky.jpg"
+  },
+  {
+    "artist": "The Alan Parsons Project",
+    "album": "Pyramid",
+    "year": 1978,
+    "artUrl": "art/The_Alan_Parsons_Project_-_Pyramid.jpg"
+  },
+  {
+    "artist": "The Beatles",
+    "album": "1962-1966",
+    "year": 1973,
+    "artUrl": "art/The_Beatles_-_1962-1966.jpg"
+  },
+  {
+    "artist": "The Beatles",
+    "album": "Sgt. Pepper's Lonely Hearts Club Band",
+    "year": 1967,
+    "artUrl": "art/The_Beatles_-_Sgt_Peppers_Lonely_Hearts_Club_Band.jpg"
+  },
+  {
+    "artist": "The Cars",
+    "album": "Greatest Hits",
+    "year": 1985,
+    "artUrl": "art/The_Cars_-_Greatest_Hits.jpg"
+  },
+  {
+    "artist": "The Cars",
+    "album": "Heartbeat City",
+    "year": 1984,
+    "artUrl": "art/The_Cars_-_Heartbeat_City.jpg"
+  },
+  {
+    "artist": "The Kinks",
+    "album": "Percy",
+    "year": 1971,
+    "artUrl": "art/The_Kinks_-_Percy.jpg"
+  },
+  {
+    "artist": "The Police",
+    "album": "Outlandos d'Amour",
+    "year": 1978,
+    "artUrl": "art/The_Police_-_Outlandos_dAmour.jpg"
+  },
+  {
+    "artist": "The Pretenders",
+    "album": "Pretenders",
+    "year": 1980,
+    "artUrl": "art/The_Pretenders_-_Pretenders.jpg"
+  },
+  {
+    "artist": "The Shadows",
+    "album": "20 Golden Greats",
+    "year": 1977,
+    "artUrl": "art/The_Shadows_-_20_Golden_Greats.jpg"
+  },
+  {
+    "artist": "The Specials",
+    "album": "More Specials",
+    "year": 1980,
+    "artUrl": "art/The_Specials_-_More_Specials.jpg"
+  },
+  {
+    "artist": "The Temperance Movement",
+    "album": "A Deeper Cut",
+    "year": 2018,
+    "artUrl": "art/The_Temperance_Movement_-_A_Deeper_Cut.jpg"
+  },
+  {
+    "artist": "The Waterboys",
+    "album": "This Is the Sea",
+    "year": 1985,
+    "artUrl": "art/The_Waterboys_-_This_Is_the_Sea.jpg"
+  },
+  {
+    "artist": "The Who",
+    "album": "Face Dances",
+    "year": 1981,
+    "artUrl": "art/The_Who_-_Face_Dances.jpg"
+  },
+  {
+    "artist": "Thin Lizzy",
+    "album": "Live and Dangerous",
+    "year": 1978,
+    "artUrl": "art/Thin_Lizzy_-_Live_and_Dangerous.jpg"
+  },
+  {
+    "artist": "Tom Waits",
+    "album": "Small Change",
+    "year": 1976,
+    "artUrl": "art/Tom_Waits_-_Small_Change.jpg"
+  },
+  {
+    "artist": "Toto",
+    "album": "Hold the Line",
+    "year": 1978,
+    "artUrl": "art/Toto_-_Hold_the_Line.jpg"
+  },
+  {
+    "artist": "U2",
+    "album": "Rattle and Hum",
+    "year": 1988,
+    "artUrl": "art/U2_-_Rattle_and_Hum.jpg"
+  },
+  {
+    "artist": "Van Halen",
+    "album": "1984",
+    "year": 1984,
+    "artUrl": "art/Van_Halen_-_1984.jpg"
+  },
+  {
+    "artist": "Van Halen",
+    "album": "5150",
+    "year": 1986,
+    "artUrl": "art/Van_Halen_-_5150.jpg"
+  },
+  {
+    "artist": "Van Halen",
+    "album": "OU812",
+    "year": 1988,
+    "artUrl": "art/Van_Halen_-_OU812.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Almost Famous (Soundtrack)",
+    "year": 2000,
+    "artUrl": "art/Various_Artists_-_Almost_Famous_Soundtrack.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Axe Attack",
+    "year": 1980,
+    "artUrl": "art/Various_Artists_-_Axe_Attack.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Days of Thunder (Soundtrack)",
+    "year": 1990,
+    "artUrl": "art/Various_Artists_-_Days_of_Thunder_Soundtrack.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Flashdance (Soundtrack)",
+    "year": 1983,
+    "artUrl": "art/Various_Artists_-_Flashdance_Soundtrack.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Goofy Greats",
+    "year": 1978,
+    "artUrl": "art/Various_Artists_-_Goofy_Greats.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "The Jungle Book (Soundtrack)",
+    "year": 1967,
+    "artUrl": "art/Various_Artists_-_The_Jungle_Book_Soundtrack.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Top Gun (Soundtrack)",
+    "year": 1986,
+    "artUrl": "art/Various_Artists_-_Top_Gun_Soundtrack.jpg"
+  },
+  {
+    "artist": "Various Artists",
+    "album": "Vaultage From the Electric Lighting Station",
+    "year": 1988,
+    "artUrl": "art/Various_Artists_-_Vaultage_From_the_Electric_Lighting_Station.jpg"
+  },
+  {
+    "artist": "Vivaldi",
+    "album": "The Four Seasons",
+    "year": 1976,
+    "artUrl": "art/Vivaldi_-_The_Four_Seasons.jpg"
+  },
+  {
+    "artist": "Whitesnake",
+    "album": "Greatest Hits",
+    "year": 1994,
+    "artUrl": "art/Whitesnake_-_Greatest_Hits.jpg"
+  }
+]

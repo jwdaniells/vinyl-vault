@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://itunes.apple.com/search?term=Guns+Roses+Appetite&entity=album&limit=10\")",
+      "Bash(git:*)"
+    ]
+  }
+}
