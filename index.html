@@ -215,7 +215,14 @@
     .tab-btn .badge { display: inline-block; background: var(--surface2); border: 1px solid var(--border); padding: 0.05rem 0.45rem; font-size: 0.65rem; margin-left: 0.4rem; color: var(--yellow); font-family: 'VT323', monospace; vertical-align: middle; }
 
     /* ── Grid ── */
-    .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; padding: 1.2rem; max-width: 1400px; margin: 0 auto; }
+    .album-grid { padding: 1.2rem; max-width: 1400px; margin: 0 auto; }
+    .sort-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; }
+    .sort-bar { display: flex; border-bottom: 1px solid var(--border); padding: 0 1.2rem; max-width: 1400px; margin: 0 auto; }
+    .sort-btn { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: -1px; }
+    .sort-btn:hover { color: var(--text); }
+    .sort-btn.active { border-bottom-color: var(--pink); color: var(--pink); }
+    .section-header { font-family: 'VT323', monospace; font-size: 1.4rem; letter-spacing: 0.2em; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; margin: 1rem 0 0.75rem; text-shadow: 0 0 10px rgba(0,212,255,0.4); }
+    .section-header span { color: var(--muted); font-size: 0.9rem; margin-left: 0.5rem; }
 
     /* ── Album Card ── */
     .card { background: var(--surface); border: 1px solid var(--border); cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
@@ -265,7 +272,8 @@
     footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border); font-family: 'VT323', monospace; font-size: 1.05rem; color: var(--muted); letter-spacing: 0.12em; }
 
     @media (max-width: 480px) {
-      .album-grid, .wishlist-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.7rem; padding: 0.8rem; }
+      .album-grid { padding: 0.8rem; }
+      .sort-grid, .wishlist-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.7rem; }
       .tab-btn { padding: 0.75rem 1rem; font-size: 0.65rem; }
       .stats-bar { gap: 1.2rem; font-size: 1rem; }
       .np-time { display: none; }
@@ -449,6 +457,11 @@
 </div>
 
 <div id="collectionView">
+  <div class="sort-bar">
+    <button class="sort-btn active" data-sort="artist" onclick="setSortMode('artist')">BY ARTIST</button>
+    <button class="sort-btn" data-sort="album" onclick="setSortMode('album')">BY ALBUM</button>
+    <button class="sort-btn" data-sort="year" onclick="setSortMode('year')">BY YEAR</button>
+  </div>
   <div class="album-grid" id="albumGrid"></div>
 </div>
 
@@ -533,6 +546,23 @@
 //  Edit albums.json to add/correct albums.
 // ════════════════════════════════════════
 let COLLECTION = [];
+let currentSort = 'artist';
+
+function stripArticle(s) { return s.replace(/^(the|a|an)\s+/i, '').trim(); }
+
+function setSortMode(mode) {
+  currentSort = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === mode));
+  applyCollection();
+}
+
+function applyCollection() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const records = q
+    ? COLLECTION.filter(r => r.artist.toLowerCase().includes(q) || r.album.toLowerCase().includes(q))
+    : COLLECTION;
+  renderCollection(records);
+}
 
 // ════════════════════════════════════════
 //  WISHLIST ART CACHE (localStorage)
@@ -863,26 +893,58 @@ function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 // ════════════════════════════════════════
 //  RENDER COLLECTION
 // ════════════════════════════════════════
+function cardHTML(r) {
+  const i = COLLECTION.indexOf(r);
+  return `<div class="card" onclick="openModal(${i})">
+    <div class="cover-wrap">
+      ${vinylHTML()}
+      <img alt="${esc(r.album)}" data-artist="${esc(r.artist)}" data-album="${esc(r.album)}">
+      <div class="card-hover-hint">▶ VIEW DETAILS</div>
+    </div>
+    <div class="card-info">
+      <div class="card-title" title="${esc(r.album)}">${esc(r.album)}</div>
+      <div class="card-artist">${esc(r.artist)}</div>
+    </div>
+    <div class="card-year">${r.year}</div>
+  </div>`;
+}
+
 function renderCollection(records) {
   const grid = document.getElementById('albumGrid');
   document.getElementById('collBadge').textContent = records.length;
-  if (!records.length) { grid.innerHTML='<div class="empty">&gt; NO RECORDS FOUND &lt;</div>'; return; }
-  grid.innerHTML = records.map(r => {
-    const i = COLLECTION.indexOf(r);
-    return `
-      <div class="card" onclick="openModal(${i})">
-        <div class="cover-wrap">
-          ${vinylHTML()}
-          <img alt="${esc(r.album)}" data-artist="${esc(r.artist)}" data-album="${esc(r.album)}">
-          <div class="card-hover-hint">▶ VIEW DETAILS</div>
-        </div>
-        <div class="card-info">
-          <div class="card-title" title="${esc(r.album)}">${esc(r.album)}</div>
-          <div class="card-artist">${esc(r.artist)}</div>
-        </div>
-        <div class="card-year">${r.year}</div>
-      </div>`;
+  if (!records.length) { grid.innerHTML = '<div class="empty" style="text-align:center;padding:4rem 1rem;font-family:\'VT323\',monospace;font-size:1.6rem;color:var(--muted);letter-spacing:0.15em">&gt; NO RECORDS FOUND &lt;</div>'; return; }
+
+  // Sort
+  let sorted;
+  if (currentSort === 'year') {
+    sorted = [...records].sort((a, b) => a.year - b.year || stripArticle(a.artist).localeCompare(stripArticle(b.artist)));
+  } else if (currentSort === 'album') {
+    sorted = [...records].sort((a, b) => stripArticle(a.album).localeCompare(stripArticle(b.album)));
+  } else {
+    sorted = [...records].sort((a, b) => stripArticle(a.artist).localeCompare(stripArticle(b.artist)) || stripArticle(a.album).localeCompare(stripArticle(b.album)));
+  }
+
+  // Group
+  const groups = [];
+  for (const r of sorted) {
+    const key = currentSort === 'year'
+      ? String(r.year)
+      : (stripArticle(currentSort === 'album' ? r.album : r.artist)[0] || '#').toUpperCase();
+    if (!groups.length || groups[groups.length - 1].key !== key) {
+      groups.push({ key, records: [r] });
+    } else {
+      groups[groups.length - 1].records.push(r);
+    }
+  }
+
+  // Render
+  grid.innerHTML = groups.map(g => {
+    const n = g.records.length;
+    return `<div class="section-header">${esc(g.key)} <span>— ${n} ${n === 1 ? 'record' : 'records'}</span></div>
+    <div class="sort-grid">${g.records.map(cardHTML).join('')}</div>`;
   }).join('');
+
+  // Load art
   grid.querySelectorAll('img[data-artist]').forEach(img => {
     const rec = COLLECTION.find(r => r.artist === img.dataset.artist && r.album === img.dataset.album);
     if (!rec?.artUrl) return;
@@ -949,10 +1011,7 @@ function addWish() {
 function removeWish(i) { wishlist.splice(i,1); saveWishlist(); renderWishlist(); }
 function wishEnter(e) { if(e.key==='Enter') addWish(); }
 
-function handleSearch() {
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  renderCollection(COLLECTION.filter(r=>r.artist.toLowerCase().includes(q)||r.album.toLowerCase().includes(q)));
-}
+function handleSearch() { applyCollection(); }
 function switchTab(tab) {
   const c=tab==='collection';
   document.getElementById('collectionView').style.display=c?'block':'none';
@@ -1169,7 +1228,7 @@ function switchDetailTab(tab) {
 
   document.getElementById('ownedStat').textContent = COLLECTION.length;
   document.getElementById('collBadge').textContent = COLLECTION.length;
-  renderCollection(COLLECTION);
+  applyCollection();
   renderWishlist();
 })();
 </script>
