@@ -265,7 +265,7 @@
     .wish-album { font-size: 0.72rem; font-weight: 700; color: var(--text); letter-spacing: 0.04em; line-height: 1.3; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .wish-artist { font-size: 0.62rem; color: var(--yellow); letter-spacing: 0.07em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .remove-wish { position: absolute; top: 0.4rem; right: 0.4rem; width: 24px; height: 24px; background: rgba(0,0,0,0.65); border: 1px solid var(--muted); color: var(--muted); font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10; opacity: 0; }
-    .card:hover .remove-wish { opacity: 1; }
+    .card:hover .remove-wish, .wish-card-clickable:hover .remove-wish { opacity: 1; }
     .remove-wish:hover { border-color: var(--pink); color: var(--pink); }
     .hunting-badge { position: absolute; top: 0.5rem; left: 0.5rem; background: var(--yellow); color: #000; font-family: 'VT323', monospace; font-size: 0.75rem; letter-spacing: 0.1em; padding: 0.1rem 0.4rem; z-index: 10; }
 
@@ -971,29 +971,39 @@ function renderWishlist() {
   document.getElementById('wishBadge').textContent = wishlist.length;
   document.getElementById('wishStat').textContent  = wishlist.length;
   if (!wishlist.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1">&gt; YOUR WISHLIST IS EMPTY — ADD RECORDS YOU\'RE HUNTING ABOVE &lt;</div>'; return; }
-  grid.innerHTML = wishlist.map((w,i) => `
-    <div class="card" style="cursor:default;">
+  grid.innerHTML = wishlist.map((w,i) => {
+    const isTBD = !w.album || w.album.toUpperCase() === 'TBD';
+    return `
+    <div class="card wish-card-clickable" onclick="openWishModal(${i})" style="cursor:pointer;">
       <div class="cover-wrap">
         ${vinylHTML()}
-        <img alt="${esc(w.album)}" data-artist="${esc(w.artist)}" data-album="${esc(w.album)}">
+        <img alt="${esc(w.album)}" data-wish-idx="${i}">
+        <div class="card-hover-hint">▶ VIEW DETAILS</div>
         <div class="hunting-badge">HUNTING</div>
-        <button class="remove-wish" onclick="removeWish(${i})">✕</button>
+        <button class="remove-wish" onclick="event.stopPropagation();removeWish(${i})">✕</button>
       </div>
       <div class="card-info">
-        <div class="card-title" title="${w.album}">${w.album}</div>
-        <div class="card-artist">${w.artist}</div>
+        <div class="card-title" title="${esc(w.album)}">${esc(w.album)}</div>
+        <div class="card-artist">${esc(w.artist)}</div>
       </div>
-    </div>`).join('');
-  grid.querySelectorAll('img[data-artist]').forEach((img, i) => {
+      ${w.year ? `<div class="card-year">${w.year}</div>` : ''}
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('img[data-wish-idx]').forEach((img, i) => {
+    const w = wishlist[i];
+    if (!w) return;
+    // If we already cached the URL on the object, use it immediately
+    if (w._artUrl) {
+      img.onload = () => { img.style.display='block'; const v=img.closest('.cover-wrap')?.querySelector('.vinyl'); if(v) v.style.display='none'; };
+      img.src = w._artUrl;
+      return;
+    }
     setTimeout(async () => {
-      const url = await fetchWishlistArt(img.dataset.artist, img.dataset.album);
+      const url = await fetchWishlistArt(w.artist, w.album);
       if (url) {
-        img.onload = () => {
-          img.style.display = 'block';
-          const v = img.closest('.cover-wrap')?.querySelector('.vinyl');
-          if (v) v.style.display = 'none';
-        };
-        img.onerror = () => { img.onerror = null; };
+        w._artUrl = url;
+        img.onload = () => { img.style.display='block'; const v=img.closest('.cover-wrap')?.querySelector('.vinyl'); if(v) v.style.display='none'; };
+        img.onerror = () => { img.onerror=null; };
         img.src = url;
       }
     }, i * 250);
@@ -1061,6 +1071,61 @@ function openModal(idx) {
 
   loadTracks(rec.artist, rec.album, rec.year);
   loadNotes(rec.artist, rec.album, rec.year);
+}
+
+// ── Open modal for a wishlist item ──────────────────────
+function openWishModal(idx) {
+  const w = wishlist[idx];
+  if (!w) return;
+
+  currentModalRecord = { artist: w.artist, album: w.album, year: w.year || '?', artUrl: w._artUrl || null };
+  currentModalTracks = [];
+
+  switchDetailTab('tracks');
+  document.getElementById('tracksLoading').style.display='';
+  document.getElementById('trackList').style.display='none';
+  document.getElementById('notesLoading').style.display='';
+  document.getElementById('notesContent').style.display='none';
+  setMpStatus('▸ SELECT A TRACK OR PRESS RANDOM BELOW');
+  document.getElementById('mpYtNote').textContent='';
+  document.getElementById('mpPlayPause').textContent='▶ PLAY';
+  stopPreviewAudio();
+
+  document.getElementById('modalTitlebarLabel').textContent = '▶ ' + w.artist.toUpperCase() + ' — WISHLIST';
+  document.getElementById('modalAlbumName').textContent  = w.album;
+  document.getElementById('modalArtistName').textContent = w.artist;
+
+  const tagsEl = document.getElementById('modalTags');
+  tagsEl.innerHTML = '';
+  if (w.year) tagsEl.innerHTML += `<span class="modal-tag year">${w.year}</span>`;
+  tagsEl.innerHTML += `<span class="modal-tag" style="border-color:var(--yellow);color:var(--yellow)">HUNTING</span>`;
+
+  const coverEl = document.getElementById('modalCover');
+  if (w._artUrl) {
+    coverEl.innerHTML = `<img src="${w._artUrl}" alt="${esc(w.album)}">`;
+  } else {
+    coverEl.innerHTML = vinylHTML();
+    // Try to fetch art in background if not yet loaded
+    fetchWishlistArt(w.artist, w.album).then(url => {
+      if (url) {
+        w._artUrl = url;
+        coverEl.innerHTML = `<img src="${url}" alt="${esc(w.album)}">`;
+      }
+    });
+  }
+
+  const q = encodeURIComponent(w.artist + ' ' + w.album);
+  document.getElementById('mpAppleMusic').href = `https://music.apple.com/search?term=${q}`;
+  document.getElementById('modalExtLinks').innerHTML = `
+    <a class="ext-link" href="https://www.discogs.com/search/?q=${q}&type=release" target="_blank">⧉ SEARCH DISCOGS</a>
+    <a class="ext-link" href="https://www.youtube.com/results?search_query=${q}" target="_blank">⧉ SEARCH YOUTUBE</a>
+    <a class="ext-link" href="https://en.wikipedia.org/w/index.php?search=${q}" target="_blank">⧉ SEARCH WIKIPEDIA</a>`;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  loadTracks(w.artist, w.album, w.year || null);
+  loadNotes(w.artist, w.album, w.year || null);
 }
 
 function closeModal() {
