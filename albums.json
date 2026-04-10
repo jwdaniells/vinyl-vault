@@ -718,5 +718,18 @@
     "album": "Greatest Hits",
     "year": 1994,
     "artUrl": "art/Whitesnake_-_Greatest_Hits.jpg"
+  },
+  {
+    "artist": "George Michael",
+    "album": "Faith",
+    "year": 2026,
+    "originalYear": 1987,
+    "edition": "Limited Edition 2026 Red & Black Marbled BioVinyl 2LP",
+    "label": "Epic / Sony Music",
+    "catalogue": "19658834251",
+    "format": "2LP",
+    "vinylColour": "Red & Black Marbled",
+    "notes": "Half-speed remastered reissue. Pressed on BioVinyl (bio-based PVC). Gatefold sleeve with printed inners. Includes bonus track: I Want Your Sex (Pts. 1, 2 & 3 – The Monogamy Mix) on Side 4.",
+    "artUrl": "art/George_Michael_-_Faith_Limited_Edition_2026_Red_Marble_2LP.jpg"
   }
 ]
